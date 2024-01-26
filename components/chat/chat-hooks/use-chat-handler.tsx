@@ -30,6 +30,8 @@ export const useChatHandler = () => {
     setIsGenerating,
     setChatMessages,
     setFirstTokenReceived,
+    setTokenCount,
+    tokenCount,
     selectedChat,
     selectedWorkspace,
     setSelectedChat,
@@ -257,7 +259,9 @@ export const useChatHandler = () => {
           newAbortController,
           setFirstTokenReceived,
           setChatMessages,
-          setToolInUse
+          setToolInUse,
+          setTokenCount,
+          tokenCount
         )
       } else {
         if (modelData!.provider === "ollama") {
@@ -271,7 +275,9 @@ export const useChatHandler = () => {
             setIsGenerating,
             setFirstTokenReceived,
             setChatMessages,
-            setToolInUse
+            setToolInUse,
+            setTokenCount,
+            tokenCount
           )
         } else {
           generatedText = await handleHostedChat(
@@ -286,7 +292,9 @@ export const useChatHandler = () => {
             setIsGenerating,
             setFirstTokenReceived,
             setChatMessages,
-            setToolInUse
+            setToolInUse,
+            setTokenCount,
+            tokenCount
           )
         }
       }

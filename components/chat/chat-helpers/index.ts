@@ -19,6 +19,7 @@ import {
   LLM,
   MessageImage
 } from "@/types"
+import { set } from "date-fns"
 import React from "react"
 import { toast } from "sonner"
 import { v4 as uuidv4 } from "uuid"
@@ -151,7 +152,9 @@ export const handleLocalChat = async (
   setIsGenerating: React.Dispatch<React.SetStateAction<boolean>>,
   setFirstTokenReceived: React.Dispatch<React.SetStateAction<boolean>>,
   setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
-  setToolInUse: React.Dispatch<React.SetStateAction<string>>
+  setToolInUse: React.Dispatch<React.SetStateAction<string>>,
+  setTokenCount?: React.Dispatch<React.SetStateAction<number>>,
+  tokenCount?: number
 ) => {
   const formattedMessages = await buildFinalMessages(payload, profile, [])
 
@@ -180,7 +183,9 @@ export const handleLocalChat = async (
     newAbortController,
     setFirstTokenReceived,
     setChatMessages,
-    setToolInUse
+    setToolInUse,
+    setTokenCount,
+    tokenCount
   )
 }
 
@@ -193,10 +198,13 @@ export const handleHostedChat = async (
   newAbortController: AbortController,
   newMessageImages: MessageImage[],
   chatImages: MessageImage[],
+
   setIsGenerating: React.Dispatch<React.SetStateAction<boolean>>,
   setFirstTokenReceived: React.Dispatch<React.SetStateAction<boolean>>,
   setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
-  setToolInUse: React.Dispatch<React.SetStateAction<string>>
+  setToolInUse: React.Dispatch<React.SetStateAction<string>>,
+  setTokenCount?: React.Dispatch<React.SetStateAction<number>>,
+  tokenCount?: number
 ) => {
   const provider =
     modelData.provider === "openai" && profile.use_azure_openai
@@ -242,7 +250,9 @@ export const handleHostedChat = async (
     newAbortController,
     setFirstTokenReceived,
     setChatMessages,
-    setToolInUse
+    setToolInUse,
+    setTokenCount,
+    tokenCount
   )
 }
 
@@ -285,11 +295,13 @@ export const processResponse = async (
   controller: AbortController,
   setFirstTokenReceived: React.Dispatch<React.SetStateAction<boolean>>,
   setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
-  setToolInUse: React.Dispatch<React.SetStateAction<string>>
+  setToolInUse: React.Dispatch<React.SetStateAction<string>>,
+  setTokenCount?: React.Dispatch<React.SetStateAction<number>>,
+  tokenCount?: number
 ) => {
   let fullText = ""
   let contentToAdd = ""
-
+  // const [token, setToken] = React.useState<number>(0)
   if (response.body) {
     await consumeReadableStream(
       response.body,
@@ -303,10 +315,14 @@ export const processResponse = async (
         } catch (error) {
           console.error("Error parsing JSON:", error)
         }
-
+        setTokenCount && setTokenCount(token => token + contentToAdd.length)
+        console.log(tokenCount)
         setChatMessages(prev =>
           prev.map(chatMessage => {
             if (chatMessage.message.id === lastChatMessage.message.id) {
+              // let contentToAddLength = contentToAdd.length
+              // setToken(token => token + contentToAddLength)
+
               const updatedChatMessage: ChatMessage = {
                 message: {
                   ...chatMessage.message,

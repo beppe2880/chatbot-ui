@@ -102,6 +102,7 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
   const [firstTokenReceived, setFirstTokenReceived] = useState<boolean>(false)
   const [abortController, setAbortController] =
     useState<AbortController | null>(null)
+  const [tokenCount, setTokenCount] = useState<number>(0)
 
   // CHAT INPUT COMMAND STORE
   const [isPromptPickerOpen, setIsPromptPickerOpen] = useState(false)
@@ -393,6 +394,8 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
         setFirstTokenReceived,
         abortController,
         setAbortController,
+        setTokenCount,
+        tokenCount,
 
         // CHAT INPUT COMMAND STORE
         isPromptPickerOpen,
